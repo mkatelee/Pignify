@@ -108,3 +108,114 @@
 <script src="script.js"></script>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PIGNIFY - SwineScale</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="sidebar">
+  <h4><i class="bi bi-scales"></i> Pignify</h4>
+  <a href="#" class="active"><i class="bi bi-calculator"></i> SwineScale</a>
+  <a href="feeds.html"><i class="bi bi-box-seam"></i> Feed Cost Tracker</a>
+  <a href="transactions.html"><i class="bi bi-journal-check"></i> Saved Transactions</a>
+</div>
+
+<div class="content-area">
+  <div class="clean-box">
+    <h3 class="text-warning text-center"><i class="bi bi-scales"></i> SwineScale</h3>
+    <div class="mb-3">
+      <label for="buyer" class="form-label">Buyer Name (optional):</label>
+      <input type="text" id="buyer" class="form-control" placeholder="Juan Dela Cruz">
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered text-center align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Weight (kg)</th>
+            <th>Price/kg</th>
+            <th>Breed</th>
+            <th>Age (months)</th>
+            <th>Vaccinated</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="pigTableBody"></tbody>
+      </table>
+    </div>
+
+    <button class="btn btn-outline-primary w-100 mb-3" onclick="addPigRow()">
+      <i class="bi bi-plus-circle"></i> Add Pig
+    </button>
+
+    <div id="totalOutput" class="alert alert-info text-center">Total Price: ₱ 0.00</div>
+
+    <div class="d-grid gap-2">
+      <button class="btn btn-success" onclick="saveTransaction()"><i class="bi bi-save2"></i> Save Transaction</button>
+      <a href="transactions.html" class="btn btn-outline-secondary"><i class="bi bi-journal-check"></i> View Transactions</a>
+    </div>
+  </div>
+</div>
+
+<!-- Vaccination History Modal -->
+<div class="modal fade" id="vaccinationModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">Vaccination History</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <ul id="vaccineHistoryList" class="list-group"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Save Success Modal -->
+<div class="modal fade" id="saveSuccessModal" tabindex="-1" aria-labelledby="saveSuccessLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-success shadow">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="saveSuccessLabel"><i class="bi bi-check-circle"></i> Transaction Saved</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        Your transaction has been successfully saved!
+      </div>
+      <div class="modal-footer justify-content-center">
+        <a href="transactions.html" class="btn btn-outline-success"><i class="bi bi-journal-check"></i> View Transactions</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Empty Warning Modal -->
+<div class="modal fade" id="emptyWarningModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-danger">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="bi bi-exclamation-circle"></i> Cannot Save</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        Please add at least one pig before saving the transaction.
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
