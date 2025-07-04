@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PIGNIFY - SwineScale</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fa;
+      transition: background-color 0.3s;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: #2c3e50;
+      padding: 20px;
+      color: white;
+      height: 100vh;
+      position: fixed;
+    }
+
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      display: block;
+      margin: 10px 0;
+      font-weight: 500;
+    }
+
+    .sidebar a.active, .sidebar a:hover {
+      color: #ffd966;
+    }
+
+    .content-area {
+      margin-left: 260px;
+      padding: 30px;
+    }
+
+    .clean-box {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-control, .form-select {
+      border-radius: 6px;
+    }
+
+    .vaccinated-select {
+      width: 100%;
+    }
+
+    .dark-mode body {
+      background-color: #1b1b1b;
+      color: #e0e0e0;
+    }
+
+    .table th, .table td {
+      vertical-align: middle;
+    }
+
+    .modal-content {
+      border-radius: 10px;
+    }
+
+    .form-check-label {
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h4><i class="bi bi-scales"></i> Pignify</h4>
+  <a href="#" class="active"><i class="bi bi-calculator"></i> SwineScale</a>
+  <a href="feeds.html"><i class="bi bi-box-seam"></i> Feed Cost Tracker</a>
+  <a href="transactions.html"><i class="bi bi-journal-check"></i> Saved Transactions</a>
+</div>
+
+<div class="content-area">
+  <div class="clean-box">
+    <h3 class="text-warning text-center"><i class="bi bi-scales"></i> SwineScale</h3>
+    <div class="mb-3">
+      <label for="buyer" class="form-label">Buyer Name (optional):</label>
+      <input type="text" id="buyer" class="form-control" placeholder="Juan Dela Cruz">
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered text-center align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Weight (kg)</th>
+            <th>Price/kg</th>
+            <th>Breed</th>
+            <th>Age (months)</th>
+            <th>Vaccinated</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="pigTableBody"></tbody>
+      </table>
+    </div>
+
+    <button class="btn btn-outline-primary w-100 mb-3" onclick="addPigRow()">
+      <i class="bi bi-plus-circle"></i> Add Pig
+    </button>
+
+    <div id="totalOutput" class="alert alert-info text-center">Total Price: ₱ 0.00</div>
+
+    <div class="d-grid gap-2">
+      <button class="btn btn-success" onclick="saveTransaction()"><i class="bi bi-save2"></i> Save Transaction</button>
+      <a href="transactions.html" class="btn btn-outline-secondary"><i class="bi bi-journal-check"></i> View Transactions</a>
+    </div>
+  </div>
+</div>
+
+<!-- Vaccination History Modal -->
+<div class="modal fade" id="vaccinationModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">Vaccination History</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <ul id="vaccineHistoryList" class="list-group"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function addPigRow() {
+    const tbody = document.getElementById("pigTableBody");
+    const index = tbody.children.length + 1;
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${index}</td>
+      <td><input type="number" class="form-control weight" placeholder="0" oninput="calculateTotal()"></td>
+      <td><input type="number" class="form-control price" placeholder="0" oninput="calculateTotal()"></td>
+      <td><input type="text" class="form-control breed" placeholder="e.g. Landrace"></td>
+      <td><input type="number" class="form-control age" placeholder="0"></td>
+      <td>
+        <select class="form-select vaccinated">
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td><span class="total">₱ 0.00</span></td>
+      <td>
+        <button class="btn btn-sm btn-primary" onclick="showVaccinationHistory(this)">History</button>
+        <button class="btn btn-sm btn-danger" onclick="deletePigRow(this)"><i class="bi bi-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  function calculateTotal() {
+    let total = 0;
+    document.querySelectorAll("#pigTableBody tr").forEach(row => {
+      const weight = parseFloat(row.querySelector(".weight")?.value) || 0;
+      const price = parseFloat(row.querySelector(".price")?.value) || 0;
+      const sum = weight * price;
+      row.querySelector(".total").textContent = `₱ ${sum.toFixed(2)}`;
+      total += sum;
+    });
+    document.getElementById("totalOutput").textContent = `Total Price: ₱ ${total.toFixed(2)}`;
+  }
+
+  function deletePigRow(btn) {
+    btn.closest("tr").remove();
+    calculateTotal();
+  }
+
+  function showVaccinationHistory(btn) {
+    const row = btn.closest("tr");
+    const pigNumber = row.cells[0].innerText;
+    const breed = row.querySelector(".breed").value || "Unknown";
+    const age = row.querySelector(".age").value || "Unknown";
+    const vaccinated = row.querySelector(".vaccinated").value;
+
+    const list = document.getElementById("vaccineHistoryList");
+    list.innerHTML = `
+      <li class="list-group-item"><strong>Pig #:</strong> ${pigNumber}</li>
+      <li class="list-group-item"><strong>Breed:</strong> ${breed}</li>
+      <li class="list-group-item"><strong>Age:</strong> ${age} month(s)</li>
+      <li class="list-group-item"><strong>Vaccinated:</strong> ${vaccinated}</li>
+    `;
+
+    new bootstrap.Modal(document.getElementById("vaccinationModal")).show();
+  }
+
+  function saveTransaction() {
+    const rows = document.querySelectorAll("#pigTableBody tr");
+    if (rows.length === 0) {
+      alert("Add at least one pig before saving.");
+      return;
+    }
+
+    let pigs = [];
+    let grandTotal = 0;
+
+    rows.forEach((row, idx) => {
+      const weight = parseFloat(row.querySelector(".weight").value) || 0;
+      const price = parseFloat(row.querySelector(".price").value) || 0;
+      const breed = row.querySelector(".breed").value || "Unknown";
+      const age = row.querySelector(".age").value || "Unknown";
+      const vaccinated = row.querySelector(".vaccinated").value;
+
+      const total = weight * price;
+      grandTotal += total;
+
+      pigs.push({ id: idx + 1, weight, price, breed, age, vaccinated, total });
+    });
+
+    const transaction = {
+      buyer: document.getElementById("buyer").value || "Anonymous",
+      pigs,
+      total: grandTotal,
+      date: new Date().toLocaleString()
+    };
+
+    let saved = JSON.parse(localStorage.getItem("transactions")) || [];
+    saved.push(transaction);
+    localStorage.setItem("transactions", JSON.stringify(saved));
+
+    alert("Transaction saved!");
+    location.reload();
+  }
+</script>
+</body>
+</html>
